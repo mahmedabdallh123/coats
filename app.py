@@ -1161,7 +1161,6 @@ def remove_equipment_from_sheet_data(sheets_edit, sheet_name, equipment_name):
 
 def add_new_department(sheets_edit):
     st.subheader("➕ إضافة قسم جديد")
-    st.info("سيتم إنشاء قسم جديد (شيت جديد) في ملف Excel لإدارة ماكينات هذا القسم")
     col1, col2 = st.columns(2)
     with col1:
         new_department_name = st.text_input("📝 اسم القسم الجديد:", key="new_department_name", placeholder="مثال: قسم الميكانيكا, قسم الكهرباء, محطة المياه")
