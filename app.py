@@ -15,7 +15,7 @@ from github import Github, GithubException
 
 # ------------------------------- الإعدادات الثابتة -------------------------------
 APP_CONFIG = {
-    "APP_TITLE": " نظام إدارة الصيانة  - CMMS Coats",
+    "APP_TITLE": " سيستم صيانه الشركه المصريه للخرسانه سابقه الاجهاد - CMMS ECPC",
     "APP_ICON": "🏭",
     "REPO_NAME": "mahmedabdallh123/coats",
     "BRANCH": "main",
