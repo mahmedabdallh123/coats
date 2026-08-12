@@ -14,12 +14,12 @@ from github import Github, GithubException
 
 # ------------------------------- الإعدادات الثابتة -------------------------------
 APP_CONFIG = {
-    "APP_TITLE": "سيستم صيانه الشركه المصريه للخرسانه سابقه اجهاد - CMMS ECPC",
+    "APP_TITLE": "Cotton-Town  - CMMS",
     "APP_ICON": "🏭",
-    "REPO_NAME": "mahmedabdallh123/coats",
+    "REPO_NAME": "mahmedabdallh123/cotton-down",
     "BRANCH": "main",
-    "FILE_PATH": "L4.xlsx",
-    "LOCAL_FILE": "L4.xlsx",
+    "FILE_PATH": "l9.xlsx",
+    "LOCAL_FILE": "l9.xlsx",
     "MAX_ACTIVE_USERS": 5,
     "SESSION_DURATION_MINUTES": 60,
     "IMAGES_FOLDER": "event_images",
@@ -60,8 +60,8 @@ EQUIPMENT_CONFIG_FILE = "equipment_config.json"
 SUPPORT_CONFIG_FILE = "support_config.json"
 
 GITHUB_EXCEL_URL = f"https://github.com/{APP_CONFIG['REPO_NAME'].split('/')[0]}/{APP_CONFIG['REPO_NAME'].split('/')[1]}/raw/{APP_CONFIG['BRANCH']}/{APP_CONFIG['FILE_PATH']}"
-GITHUB_USERS_URL = "https://raw.githubusercontent.com/mahmedabdallh123/coats/refs/heads/main/users.json"
-GITHUB_REPO_USERS = "mahmedabdallh123/coats"
+GITHUB_USERS_URL = "https://raw.githubusercontent.com/mahmedabdallh123/cotton-down  /refs/heads/main/users.json"
+GITHUB_REPO_USERS = "mahmedabdallh123/cotton-down  "
 GITHUB_TOKEN = st.secrets.get("github", {}).get("token", None)
 GITHUB_AVAILABLE = GITHUB_TOKEN is not None
 ACTIVITY_LOG_FILE = "activity_log.json"
@@ -1456,17 +1456,28 @@ def add_new_machine(sheets_edit, sheet_name):
     return sheets_edit
 
 def manage_machines(sheets_edit, sheet_name, unique_suffix=""):
+    """
+    إدارة الماكينات في قسم معين: عرض، إضافة، حذف.
+    """
+    # التحقق من وجود القسم
+    if sheet_name not in sheets_edit:
+        st.error(f"⚠️ القسم '{sheet_name}' غير موجود في البيانات الحالية.")
+        return
+
     st.markdown(f"### 🔧 إدارة الماكينات في قسم: {sheet_name}")
     df = sheets_edit[sheet_name]
     equipment_list = get_equipment_list_from_sheet(df)
+
     if equipment_list:
         st.markdown("#### 📋 قائمة الماكينات في هذا القسم:")
         for eq in equipment_list:
             st.markdown(f"- 🔹 {eq}")
     else:
         st.info("لا توجد ماكينات مسجلة في هذا القسم بعد")
+
     st.markdown("---")
-    
+
+    # نموذج إضافة ماكينة جديدة
     with st.form(key=f"add_machine_form_{sheet_name}_{unique_suffix}"):
         new_machine = st.text_input("➕ اسم الماكينة الجديدة:", key=f"new_machine_input_{sheet_name}_{unique_suffix}")
         submitted_add = st.form_submit_button("➕ إضافة ماكينة")
@@ -1484,7 +1495,8 @@ def manage_machines(sheets_edit, sheet_name, unique_suffix=""):
                     st.error(msg)
             else:
                 st.warning("يرجى إدخال اسم الماكينة")
-    
+
+    # حذف ماكينة (للمدير فقط)
     if equipment_list:
         st.markdown("#### 🗑️ حذف ماكينة")
         if st.session_state.get("username") == "admin":
@@ -1507,7 +1519,6 @@ def manage_machines(sheets_edit, sheet_name, unique_suffix=""):
             st.info("🔒 حذف الماكينات مقيد بصلاحيات المدير (admin). تواصل مع مدير النظام.")
     else:
         st.info("لا توجد ماكينات لحذفها")
-
 def add_new_event(sheets_edit, sheet_name):
     st.markdown(f"### 📝 إضافة حدث عطل جديد في قسم: {sheet_name}")
     df = sheets_edit[sheet_name]
@@ -2080,15 +2091,23 @@ def preventive_maintenance_tab(sheets_edit):
 
 # ------------------------------- دالة إدارة البيانات الرئيسية -------------------------------
 def manage_data_edit(sheets_edit):
+    """
+    تبويب تعديل وإدارة البيانات: عرض الأقسام، إدارة الماكينات، إضافة قسم، قطع الغيار، الصيانة الوقائية.
+    """
     if sheets_edit is None:
         st.warning("الملف غير موجود. استخدم زر 'تحديث من GitHub' في الشريط الجانبي أولاً")
         return sheets_edit
+
+    # التأكد من وجود أوراق قطع الغيار والصيانة الوقائية
     if APP_CONFIG["SPARE_PARTS_SHEET"] not in sheets_edit:
         sheets_edit[APP_CONFIG["SPARE_PARTS_SHEET"]] = load_spare_parts()
     if APP_CONFIG["MAINTENANCE_SHEET"] not in sheets_edit:
         sheets_edit[APP_CONFIG["MAINTENANCE_SHEET"]] = load_maintenance_tasks()
+
     tab_names = ["📋 عرض الأقسام", "🔧 إدارة الماكينات", "➕ إضافة قسم جديد", "📦 قطع الغيار", "🛠 الصيانة الوقائية"]
     tabs_edit = st.tabs(tab_names)
+
+    # ----- تبويب عرض الأقسام -----
     with tabs_edit[0]:
         st.subheader("جميع الأقسام")
         if sheets_edit:
@@ -2109,18 +2128,36 @@ def manage_data_edit(sheets_edit):
                                     st.rerun()
             else:
                 st.info("لا توجد أقسام بعد")
+        else:
+            st.info("لا توجد بيانات")
+
+    # ----- تبويب إدارة الماكينات (المعدل) -----
     with tabs_edit[1]:
-        if sheets_edit:
-            sheet_name = st.selectbox("اختر القسم:", [name for name in sheets_edit.keys() if name not in [APP_CONFIG["SPARE_PARTS_SHEET"], APP_CONFIG["MAINTENANCE_SHEET"]]], key="manage_machines_sheet_edit")
-            manage_machines(sheets_edit, sheet_name, unique_suffix=f"edit_{sheet_name}")
+        # الحصول على قائمة الأقسام الحقيقية (باستثناء الأوراق الخاصة)
+        sections = [name for name in sheets_edit.keys() if name not in [APP_CONFIG["SPARE_PARTS_SHEET"], APP_CONFIG["MAINTENANCE_SHEET"]]]
+        if sections:
+            sheet_name = st.selectbox("اختر القسم:", sections, key="manage_machines_sheet_edit")
+            # التأكد من وجود القسم المختار (قد يكون تم حذفه خارجياً)
+            if sheet_name in sheets_edit:
+                manage_machines(sheets_edit, sheet_name, unique_suffix=f"edit_{sheet_name}")
+            else:
+                st.error("⚠️ القسم المحدد غير موجود، يرجى تحديث الصفحة.")
+        else:
+            st.info("لا توجد أقسام لإدارة الماكينات فيها. قم بإضافة قسم جديد أولاً.")
+
+    # ----- تبويب إضافة قسم جديد -----
     with tabs_edit[2]:
         sheets_edit = add_new_department(sheets_edit)
+
+    # ----- تبويب قطع الغيار -----
     with tabs_edit[3]:
         sheets_edit = manage_spare_parts_tab(sheets_edit)
+
+    # ----- تبويب الصيانة الوقائية -----
     with tabs_edit[4]:
         sheets_edit = preventive_maintenance_tab(sheets_edit)
-    return sheets_edit
 
+    return sheets_edit
 # ------------------------------- الواجهة الرئيسية -------------------------------
 with st.sidebar:
     st.header("الجلسة")
