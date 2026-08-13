@@ -10,5 +10,11 @@
     "username": "admin",
     "action_type": "add_maintenance_task",
     "details": "تم إضافة بند صيانة 'فحص طرمبه وتشحيم' للماكينة طرمبه اختبار (فترة 720 ساعة)"
+  },
+  {
+    "timestamp": "2026-08-13T20:26:34.654931",
+    "username": "admin",
+    "action_type": "add_maintenance_task",
+    "details": "تم إضافة بند صيانة 'فحص طرمبه وتشحيم' للماكينة طرمبه اختبار (فترة 720 ساعة)"
   }
 ]
