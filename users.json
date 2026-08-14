@@ -20,6 +20,14 @@
             ]
         }
     },
+    "Hany": {
+        "password": "12345",
+        "permissions": {
+            "all_sections": false
+        },
+        "role": "admin",
+        "sections_permissions": {}
+    },
     "admin": {
         "password": "0000",
         "permissions": {
