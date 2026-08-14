@@ -2,7 +2,7 @@
     "Atef": {
         "password": "1234",
         "permissions": {
-            "all_sections": false
+            "all_sections": true
         },
         "role": "admin",
         "sections_permissions": {}
