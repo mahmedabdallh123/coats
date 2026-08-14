@@ -26,7 +26,15 @@
             "all_sections": false
         },
         "role": "admin",
-        "sections_permissions": {}
+        "sections_permissions": {
+            "C14": [],
+            "عنبر الصاج": [
+                "view",
+                "edit",
+                "add_event",
+                "manage_machines"
+            ]
+        }
     },
     "admin": {
         "password": "0000",
